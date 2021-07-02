@@ -38,6 +38,12 @@ end)
 
 -- control selection of parts and faces on those parts
 local Selection = require(script.Selection)
+-- i could pass the maid to selection, but that's too much work for 1 event and a function
+myMaid:GiveTask(Selection.Changed)
+myMaid:GiveTask(function()
+    Selection.Part = nil
+    Selection.Face = nil
+end)
 
 Selection.Changed:Connect(function()
     faceSelectGui.Adornee = Selection.Part
