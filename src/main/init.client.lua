@@ -1,9 +1,18 @@
 -- index gui stuff
-local faceSelectGui = script.ScaleSnapSelect
-local notifyGui = script.ScaleSnapNotify
+local faceSelectGui = script.ScaleSnapSelect:Clone()
+local notifyGui = script.ScaleSnapNotify:Clone()
 
 faceSelectGui.Parent = game:GetService("CoreGui")
 notifyGui.Parent = game:GetService("CoreGui")
+
+local myMaid = require(script.Maid).new()
+
+myMaid:GiveTask(faceSelectGui)
+myMaid:GiveTask(notifyGui)
+
+plugin.Unloading:Connect(function()
+    myMaid:DoCleaning()
+end)
 
 
 -- toggle the plugin on and off

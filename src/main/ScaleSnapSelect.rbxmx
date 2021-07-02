@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="SurfaceGui" referent="RBXA43C16665D42480DB3E177DC164941A3">
+	<Item class="SurfaceGui" referent="RBX9A56B6D635DA411A998F1CEB00DF640A">
 		<Properties>
 			<bool name="Active">true</bool>
 			<Ref name="Adornee">null</Ref>
@@ -19,7 +19,7 @@
 			<token name="Face">5</token>
 			<float name="LightInfluence">0</float>
 			<string name="Name">ScaleSnapSelect</string>
-			<float name="PixelsPerStud">50</float>
+			<float name="PixelsPerStud">100</float>
 			<bool name="ResetOnSpawn">true</bool>
 			<Ref name="RootLocalizationTable">null</Ref>
 			<token name="SizingMode">1</token>
@@ -29,12 +29,12 @@
 			<token name="ZIndexBehavior">1</token>
 			<float name="ZOffset">0</float>
 		</Properties>
-		<Item class="Frame" referent="RBX9002D85AF5C445C7BD2BF600B493E65C">
+		<Item class="Frame" referent="RBX7222830C06ED4EE28BAE6D5D10C27CDD">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
-					<X>0</X>
-					<Y>0</Y>
+					<X>0.5</X>
+					<Y>0.5</Y>
 				</Vector2>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">true</bool>
@@ -44,7 +44,7 @@
 					<G>0.666666687</G>
 					<B>1</B>
 				</Color3>
-				<float name="BackgroundTransparency">0</float>
+				<float name="BackgroundTransparency">0.300000012</float>
 				<Color3 name="BorderColor3">
 					<R>0.666666687</R>
 					<G>0.666666687</G>
@@ -61,9 +61,9 @@
 				<Ref name="NextSelectionRight">null</Ref>
 				<Ref name="NextSelectionUp">null</Ref>
 				<UDim2 name="Position">
-					<XS>0</XS>
+					<XS>0.5</XS>
 					<XO>0</XO>
-					<YS>0</YS>
+					<YS>0.5</YS>
 					<YO>0</YO>
 				</UDim2>
 				<Ref name="RootLocalizationTable">null</Ref>
@@ -72,9 +72,9 @@
 				<Ref name="SelectionImageObject">null</Ref>
 				<UDim2 name="Size">
 					<XS>1</XS>
-					<XO>1</XO>
+					<XO>-10</XO>
 					<YS>1</YS>
-					<YO>1</YO>
+					<YO>-10</YO>
 				</UDim2>
 				<token name="SizeConstraint">0</token>
 				<int64 name="SourceAssetId">-1</int64>
@@ -83,6 +83,18 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
+			<Item class="UICorner" referent="RBX754B466350514915BC94589988DE1919">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<UDim name="CornerRadius">
+						<S>0</S>
+						<O>25</O>
+					</UDim>
+					<string name="Name">UICorner</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
 		</Item>
 	</Item>
 </roblox>
