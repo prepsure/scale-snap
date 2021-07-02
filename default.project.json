@@ -1,0 +1,12 @@
+{
+  "name": "scale-snap",
+  "tree": {
+    "$className": "DataModel",
+
+    "ServerStorage": {
+      "scale-snap": {
+        "$path": "src"
+      }
+    }
+  }
+}
