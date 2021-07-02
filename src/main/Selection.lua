@@ -57,7 +57,7 @@ end
 
 
 -- bind mouse click to selection change
-UserInputService.InputEnded:Connect(function(input)
+local inputCxn = UserInputService.InputEnded:Connect(function(input)
     if input.UserInputType ~= Enum.UserInputType.MouseButton1 then
         return
     end
@@ -77,4 +77,13 @@ UserInputService.InputEnded:Connect(function(input)
 end)
 
 
-return Selection
+return function(maid)
+    maid:GiveTask(inputCxn)
+    maid:GiveTask(Selection.Changed)
+    maid:GiveTask(function()
+        Selection.Part = nil
+        Selection.Face = nil
+    end)
+
+    return Selection
+end
