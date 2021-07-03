@@ -41,7 +41,7 @@
 				<int name="BorderSizePixel">0</int>
 				<bool name="ClipsDescendants">false</bool>
 				<bool name="Draggable">false</bool>
-				<Content name="Image"><url>rbxassetid://7034414957</url></Content>
+				<Content name="Image"><url>rbxassetid://7038356904</url></Content>
 				<Color3 name="ImageColor3">
 					<R>1</R>
 					<G>1</G>
@@ -75,9 +75,9 @@
 				<Ref name="SelectionImageObject">null</Ref>
 				<UDim2 name="Size">
 					<XS>0</XS>
-					<XO>32</XO>
+					<XO>40</XO>
 					<YS>0</YS>
-					<YO>32</YO>
+					<YO>40</YO>
 				</UDim2>
 				<token name="SizeConstraint">0</token>
 				<Rect2D name="SliceCenter">

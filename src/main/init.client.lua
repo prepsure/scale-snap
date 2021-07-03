@@ -25,7 +25,7 @@ local ssToggle = plugin:CreatePluginAction(
     "sstoggle",
     "Scale Snap Toggle",
     "Toggles Scale Snap on and off",
-    "rbxassetid://7034457110",
+    "rbxassetid://7038208699",
     true
 )
 ssToggle.Triggered:Connect(function()
@@ -54,14 +54,14 @@ local ssExtend = plugin:CreatePluginAction(
     "ssextend",
     "Scale Snap Extend",
     "Extends a surface outward by the grid size",
-    "rbxassetid://7034452730",
+    "rbxassetid://7038208539",
     true
 )
 local ssRetract = plugin:CreatePluginAction(
     "ssretract",
     "Scale Snap Retract",
     "Retracts a surface inward by the grid size",
-    "rbxassetid://7034452781",
+    "rbxassetid://7038373396",
     true
 )
 
