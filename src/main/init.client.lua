@@ -48,7 +48,7 @@ myMaid:GiveTask(
 
 
 -- extend and retract functionality
-local Scaler = require(script.Scaler)
+local Scaler = require(script.Scaler)(myMaid)
 
 local ssExtend = plugin:CreatePluginAction(
     "ssextend",
