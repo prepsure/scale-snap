@@ -5,10 +5,10 @@
 </p>
 
 ## Setup
-1. Download the plugin, either through Roblox's plugin library or by installing the latest release in this repository in your local plugins folder.
+1. Download the plugin, either through [Roblox's library](https://www.roblox.com/library/7034469724/Scale-Snap) or by installing the [latest release](https://github.com/presssssure/scale-snap/releases) in your local plugins folder.
 2. Open the Customize Shortcuts Window in Roblox Studio
 ![image](https://user-images.githubusercontent.com/33643911/124401446-a2b90780-dcf7-11eb-8eea-23f53362af60.png)
-3. Search "snap" and bind these to whatever key's you'd like to use!
+3. Search "snap" and bind these to whatever keys you'd like to use!
 ![image](https://user-images.githubusercontent.com/33643911/124401467-c0866c80-dcf7-11eb-84b3-562bcf24139c.png)
 
 
