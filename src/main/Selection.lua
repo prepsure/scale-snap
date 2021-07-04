@@ -24,7 +24,7 @@ local function getFaceFromNormal(part, norm)
 end
 
 
-local function raycastFromMouse(mousePos, whitelist)
+local function raycastFromScreenPoint(mousePos, whitelist)
     local camera = workspace.CurrentCamera
     local screenRay = camera:ViewportPointToRay(mousePos.X, mousePos.Y)
 
@@ -62,17 +62,30 @@ local inputCxn = UserInputService.InputEnded:Connect(function(input)
         return
     end
 
-    local result = raycastFromMouse(input.Position, studioSelection:Get())
+    local result = raycastFromScreenPoint(input.Position, studioSelection:Get())
 
     -- check if raycast was successful
     if not result then
         return
     end
 
+    -- because the part might not be a rectangular prism,
+    -- we need to do a second raycast to get the face of the instance
+    local targetInstance = result.Instance
+
+    local cube = Instance.new("Part")
+    cube.Size = targetInstance.Size
+    cube.CFrame = targetInstance.CFrame
+    cube.Transparency = 1
+    cube.Parent = workspace
+
+    local cubecast = raycastFromScreenPoint(input.Position, {cube})
+    cube:Destroy()
+
     -- cache new part and face
     Selection.SetSelection(
-        result.Instance,
-        getFaceFromNormal(result.Instance, result.Normal)
+        targetInstance,
+        getFaceFromNormal(targetInstance, cubecast.Normal)
     )
 end)
 
