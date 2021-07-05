@@ -29,8 +29,11 @@ local function raycastFromScreenPoint(mousePos, whitelist)
     local screenRay = camera:ViewportPointToRay(mousePos.X, mousePos.Y)
 
     local params = RaycastParams.new()
-    params.FilterType = Enum.RaycastFilterType.Whitelist
-    params.FilterDescendantsInstances = whitelist
+    params.CollisionGroup = "Default"
+    if whitelist then
+        params.FilterType = Enum.RaycastFilterType.Whitelist
+        params.FilterDescendantsInstances = whitelist
+    end
 
     local result = workspace:Raycast(
         screenRay.Origin, screenRay.Direction * 1000, params
@@ -43,16 +46,43 @@ end
 
 local Selection = {}
 
-Selection.Part = nil
-Selection.Face = nil
+Selection.List = {}
 Selection.Changed = Signal.new()
 
 
-function Selection.SetSelection(part, face)
-    Selection.Part = part
-    Selection.Face = face
+function Selection.Select(part, face)
 
-    Selection.Changed:Fire()
+    table.insert(Selection.List, {
+        Part = part,
+        Face = face,
+    })
+
+    Selection.Changed:Fire('add')
+end
+
+
+function Selection.Deselect(part, face)
+    local deselectedPos = nil
+
+    for i, pf in pairs(Selection.List) do
+        if pf.Part == part and pf.Face == face then
+            table.remove(Selection.List, i)
+            deselectedPos = i
+            break
+        end
+    end
+
+    if deselectedPos then
+        Selection.Changed:Fire('remove', deselectedPos)
+    end
+
+    return deselectedPos
+end
+
+
+function Selection.ResetSelection()
+    table.clear(Selection.List)
+    Selection.Changed:Fire('reset')
 end
 
 
@@ -62,11 +92,22 @@ local inputCxn = UserInputService.InputEnded:Connect(function(input)
         return
     end
 
+    if not (
+        input:IsModifierKeyDown(Enum.ModifierKey.Ctrl) or
+        input:IsModifierKeyDown(Enum.ModifierKey.Shift)
+    ) then
+        Selection.ResetSelection()
+    end
+
     local result = raycastFromScreenPoint(input.Position, studioSelection:Get())
 
     -- check if raycast was successful
     if not result then
-        return
+        result = raycastFromScreenPoint(input.Position)
+
+        if not result then
+            return
+        end
     end
 
     -- because the part might not be a rectangular prism,
@@ -82,11 +123,17 @@ local inputCxn = UserInputService.InputEnded:Connect(function(input)
     local cubecast = raycastFromScreenPoint(input.Position, {cube})
     cube:Destroy()
 
-    -- cache new part and face
-    Selection.SetSelection(
-        targetInstance,
-        getFaceFromNormal(targetInstance, cubecast.Normal)
-    )
+    -- get part and face for selection
+    local part = targetInstance
+    local face = getFaceFromNormal(targetInstance, cubecast.Normal)
+
+    -- check if it was already selected, an if so, deselect it
+    if Selection.Deselect(part, face) then
+        return
+    end
+
+    -- select the new part and face pair!
+    Selection.Select(part, face)
 end)
 
 
@@ -94,8 +141,7 @@ return function(maid)
     maid:GiveTask(inputCxn)
     maid:GiveTask(Selection.Changed)
     maid:GiveTask(function()
-        Selection.Part = nil
-        Selection.Face = nil
+        table.clear(Selection.List)
     end)
 
     return Selection

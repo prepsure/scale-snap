@@ -10,9 +10,8 @@ end)
 -- uis
 local CoreGui = game:GetService("CoreGui")
 
-local faceSelectGui = root.Assets.ScaleSnapSelect:Clone()
-faceSelectGui.Parent = CoreGui
-myMaid:GiveTask(faceSelectGui)
+local faceSelectGui = root.Assets.ScaleSnapSelect
+local selectGuis = {}
 
 local notifyGui = root.Assets.ScaleSnapNotify:Clone()
 notifyGui.Parent = CoreGui
@@ -32,7 +31,9 @@ ssToggle.Triggered:Connect(function()
     toggle = not toggle
 
     notifyGui.Enabled = toggle
-    faceSelectGui.Enabled = toggle
+    for _, v in pairs(selectGuis) do
+        v.Enabled = toggle
+    end
 end)
 
 
@@ -40,9 +41,33 @@ end)
 local Selection = require(script.Selection)(myMaid)
 
 myMaid:GiveTask(
-    Selection.Changed:Connect(function()
-        faceSelectGui.Adornee = Selection.Part
-        faceSelectGui.Face = Selection.Face
+    Selection.Changed:Connect(function(action, position)
+        if action == 'reset' then
+
+            for _, v in pairs(selectGuis) do
+                v:Destroy()
+            end
+            table.clear(selectGuis)
+
+        elseif action == 'add' then
+
+            local new = faceSelectGui:Clone()
+            table.insert(selectGuis, new)
+            position = #selectGuis
+
+            new.Adornee = Selection.List[position].Part
+            new.Face = Selection.List[position].Face
+            new.Enabled = toggle
+
+            new.Parent = CoreGui
+            myMaid:GiveTask(new)
+
+        elseif action == 'remove' then
+
+            local defunct = table.remove(selectGuis, position)
+            defunct:Destroy()
+
+        end
     end)
 )
 
@@ -65,21 +90,23 @@ local ssRetract = plugin:CreatePluginAction(
     true
 )
 
+local function scale(dir)
+    if not toggle then
+        return
+    end
+
+    for _, pf in pairs(Selection.List) do
+        Scaler.ScaleFace(pf.Part, pf.Face, plugin.GridSize, dir)
+    end
+end
+
 myMaid:GiveTask(
     ssExtend.Triggered:Connect(function()
-        if not toggle then
-            return
-        end
-
-        Scaler.ScaleFace(Selection.Part, Selection.Face, plugin.GridSize, 1)
+        scale(1)
     end)
 )
 myMaid:GiveTask(
     ssRetract.Triggered:Connect(function()
-        if not toggle then
-            return
-        end
-
-        Scaler.ScaleFace(Selection.Part, Selection.Face, plugin.GridSize, -1)
+        scale(-1)
     end)
 )
