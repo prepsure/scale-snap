@@ -37,6 +37,21 @@ ssToggle.Triggered:Connect(function()
 end)
 
 
+-- toggle precision mode
+local precision = false
+local ssPrecise = plugin:CreatePluginAction(
+    "ssprecise",
+    "Scale Snap Precision Mode",
+    "Toggles precision mode. The increment is reduced to 1/10th of the grid size.",
+    "rbxassetid://7053183322",
+    true
+)
+ssPrecise.Triggered:Connect(function()
+    precision = not precision
+    notifyGui.Icon.Image = precision and "rbxassetid://7053183216" or "rbxassetid://7038356904"
+end)
+
+
 -- control selection of parts and faces on those parts
 local Selection = require(script.Selection)(myMaid)
 
@@ -53,7 +68,6 @@ myMaid:GiveTask(
 
             local new = faceSelectGui:Clone()
             table.insert(selectGuis, new)
-            position = #selectGuis
 
             new.Adornee = Selection.List[position].Part
             new.Face = Selection.List[position].Face
@@ -95,8 +109,10 @@ local function scale(dir)
         return
     end
 
+    local increment = precision and plugin.GridSize/10 or plugin.GridSize
+
     for _, pf in pairs(Selection.List) do
-        Scaler.ScaleFace(pf.Part, pf.Face, plugin.GridSize, dir)
+        Scaler.ScaleFace(pf.Part, pf.Face, increment, dir)
     end
 end
 

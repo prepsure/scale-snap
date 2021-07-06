@@ -57,7 +57,7 @@ function Selection.Select(part, face)
         Face = face,
     })
 
-    Selection.Changed:Fire('add')
+    Selection.Changed:Fire('add', #Selection.List)
 end
 
 
