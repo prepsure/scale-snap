@@ -10,6 +10,12 @@ end)
 local UI = require(root.main.UI)
 myMaid:GiveTask(UI)
 
+
+-- preview
+local UIPreview = require(root.main.UIPreview)
+myMaid:GiveTask(UIPreview)
+
+
 -- toggle plugin
 local toggle = false
 
@@ -25,6 +31,7 @@ myMaid:GiveTask(
     ssToggle.Triggered:Connect(function()
         toggle = not toggle
         UI:ToggleVisibility(toggle)
+        UIPreview:Toggle(toggle)
     end)
 )
 

@@ -92,6 +92,44 @@ function Selection.ResetSelection()
 end
 
 
+function Selection:GetPartAndFaceFromScreenPoint(pos)
+    local result = raycastFromScreenPoint(pos, studioSelection:Get())
+
+    -- check if raycast was successful
+    if not result or result.Instance.Locked then
+        result = raycastFromScreenPoint(pos)
+
+        if not result or result.Instance.Locked then
+            return nil, nil
+        end
+    end
+
+    -- because the part might not be a rectangular prism,
+    -- we need to do a second raycast to get the face of the instance
+    local targetInstance = result.Instance
+
+    local cube = Instance.new("Part")
+    cube.Size = targetInstance.Size
+    cube.CFrame = targetInstance.CFrame
+    cube.Transparency = 1
+    cube.Parent = workspace
+
+    local cubecast = raycastFromScreenPoint(pos, {cube})
+    cube:Destroy()
+
+    if not cubecast then
+        -- this happens sometimes for some reason?? best to ignore it
+        return nil, nil
+    end
+
+    -- get part and face for selection
+    local part = targetInstance
+    local face = getFaceFromNormal(targetInstance, cubecast.Normal)
+
+    return part, face
+end
+
+
 -- bind mouse click to selection change
 Selection._maid:GiveTask(
     UserInputService.InputEnded:Connect(function(input)
@@ -106,38 +144,11 @@ Selection._maid:GiveTask(
             Selection.ResetSelection()
         end
 
-        local result = raycastFromScreenPoint(input.Position, studioSelection:Get())
+        local part, face = Selection:GetPartAndFaceFromScreenPoint(input.Position)
 
-        -- check if raycast was successful
-        if not result then
-            result = raycastFromScreenPoint(input.Position)
-
-            if not result then
-                return
-            end
-        end
-
-        -- because the part might not be a rectangular prism,
-        -- we need to do a second raycast to get the face of the instance
-        local targetInstance = result.Instance
-
-        local cube = Instance.new("Part")
-        cube.Size = targetInstance.Size
-        cube.CFrame = targetInstance.CFrame
-        cube.Transparency = 1
-        cube.Parent = workspace
-
-        local cubecast = raycastFromScreenPoint(input.Position, {cube})
-        cube:Destroy()
-
-        if not cubecast then
-            -- this happens sometimes for some reason?? best to ignore it
+        if not (part and face) then
             return
         end
-
-        -- get part and face for selection
-        local part = targetInstance
-        local face = getFaceFromNormal(targetInstance, cubecast.Normal)
 
         -- check if it was already selected, an if so, deselect it
         if Selection.Deselect(part, face) then
