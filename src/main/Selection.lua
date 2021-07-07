@@ -2,6 +2,7 @@ local UserInputService = game:GetService("UserInputService")
 local studioSelection = game.Selection
 
 local root = script.Parent.Parent
+local Maid = require(root.Util.Maid)
 local Signal = require(root.Util.Signal)
 
 
@@ -45,10 +46,15 @@ end
 
 
 local Selection = {}
+Selection._maid = Maid.new()
 
 Selection.List = {}
-Selection.Changed = Signal.new()
+Selection._maid:GiveTask(function()
+    table.clear(Selection.List)
+end)
 
+Selection.Changed = Signal.new()
+Selection._maid:GiveTask(Selection.Changed)
 
 function Selection.Select(part, face)
 
@@ -87,62 +93,66 @@ end
 
 
 -- bind mouse click to selection change
-local inputCxn = UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType ~= Enum.UserInputType.MouseButton1 then
-        return
-    end
-
-    if not (
-        input:IsModifierKeyDown(Enum.ModifierKey.Ctrl) or
-        input:IsModifierKeyDown(Enum.ModifierKey.Shift)
-    ) then
-        Selection.ResetSelection()
-    end
-
-    local result = raycastFromScreenPoint(input.Position, studioSelection:Get())
-
-    -- check if raycast was successful
-    if not result then
-        result = raycastFromScreenPoint(input.Position)
-
-        if not result then
+Selection._maid:GiveTask(
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType ~= Enum.UserInputType.MouseButton1 then
             return
         end
-    end
 
-    -- because the part might not be a rectangular prism,
-    -- we need to do a second raycast to get the face of the instance
-    local targetInstance = result.Instance
+        if not (
+            input:IsModifierKeyDown(Enum.ModifierKey.Ctrl) or
+            input:IsModifierKeyDown(Enum.ModifierKey.Shift)
+        ) then
+            Selection.ResetSelection()
+        end
 
-    local cube = Instance.new("Part")
-    cube.Size = targetInstance.Size
-    cube.CFrame = targetInstance.CFrame
-    cube.Transparency = 1
-    cube.Parent = workspace
+        local result = raycastFromScreenPoint(input.Position, studioSelection:Get())
 
-    local cubecast = raycastFromScreenPoint(input.Position, {cube})
-    cube:Destroy()
+        -- check if raycast was successful
+        if not result then
+            result = raycastFromScreenPoint(input.Position)
 
-    -- get part and face for selection
-    local part = targetInstance
-    local face = getFaceFromNormal(targetInstance, cubecast.Normal)
+            if not result then
+                return
+            end
+        end
 
-    -- check if it was already selected, an if so, deselect it
-    if Selection.Deselect(part, face) then
-        return
-    end
+        -- because the part might not be a rectangular prism,
+        -- we need to do a second raycast to get the face of the instance
+        local targetInstance = result.Instance
 
-    -- select the new part and face pair!
-    Selection.Select(part, face)
-end)
+        local cube = Instance.new("Part")
+        cube.Size = targetInstance.Size
+        cube.CFrame = targetInstance.CFrame
+        cube.Transparency = 1
+        cube.Parent = workspace
 
+        local cubecast = raycastFromScreenPoint(input.Position, {cube})
+        cube:Destroy()
 
-return function(maid)
-    maid:GiveTask(inputCxn)
-    maid:GiveTask(Selection.Changed)
-    maid:GiveTask(function()
-        table.clear(Selection.List)
+        if not cubecast then
+            -- this happens sometimes for some reason?? best to ignore it
+            return
+        end
+
+        -- get part and face for selection
+        local part = targetInstance
+        local face = getFaceFromNormal(targetInstance, cubecast.Normal)
+
+        -- check if it was already selected, an if so, deselect it
+        if Selection.Deselect(part, face) then
+            return
+        end
+
+        -- select the new part and face pair!
+        Selection.Select(part, face)
     end)
+)
 
-    return Selection
+
+function Selection:Destroy()
+    Selection._maid:DoCleaning()
 end
+
+
+return Selection

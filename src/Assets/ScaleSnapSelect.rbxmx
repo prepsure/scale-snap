@@ -15,7 +15,7 @@
 				<Y>600</Y>
 			</Vector2>
 			<bool name="ClipsDescendants">true</bool>
-			<bool name="Enabled">false</bool>
+			<bool name="Enabled">true</bool>
 			<token name="Face">5</token>
 			<float name="LightInfluence">0</float>
 			<string name="Name">ScaleSnapSelect</string>

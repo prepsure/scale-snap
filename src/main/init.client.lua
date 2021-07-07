@@ -6,20 +6,13 @@ plugin.Unloading:Connect(function()
     myMaid:DoCleaning()
 end)
 
-
--- uis
-local CoreGui = game:GetService("CoreGui")
-
-local faceSelectGui = root.Assets.ScaleSnapSelect
-local selectGuis = {}
-
-local notifyGui = root.Assets.ScaleSnapNotify:Clone()
-notifyGui.Parent = CoreGui
-myMaid:GiveTask(notifyGui)
-
+--uis
+local UI = require(root.main.UI)
+myMaid:GiveTask(UI)
 
 -- toggle plugin
 local toggle = false
+
 local ssToggle = plugin:CreatePluginAction(
     "sstoggle",
     "Scale Snap Toggle",
@@ -27,18 +20,19 @@ local ssToggle = plugin:CreatePluginAction(
     "rbxassetid://7038208699",
     true
 )
-ssToggle.Triggered:Connect(function()
-    toggle = not toggle
 
-    notifyGui.Enabled = toggle
-    for _, v in pairs(selectGuis) do
-        v.Enabled = toggle
-    end
-end)
+myMaid:GiveTask(
+    ssToggle.Triggered:Connect(function()
+        toggle = not toggle
+        UI:ToggleVisibility(toggle)
+    end)
+)
 
 
 -- toggle precision mode
-local precision = false
+local precisionToggle = false
+local precisionScale = 1/10
+
 local ssPrecise = plugin:CreatePluginAction(
     "ssprecise",
     "Scale Snap Precision Mode",
@@ -46,48 +40,34 @@ local ssPrecise = plugin:CreatePluginAction(
     "rbxassetid://7053183322",
     true
 )
-ssPrecise.Triggered:Connect(function()
-    precision = not precision
-    notifyGui.Icon.Image = precision and "rbxassetid://7053183216" or "rbxassetid://7038356904"
-end)
-
-
--- control selection of parts and faces on those parts
-local Selection = require(script.Selection)(myMaid)
 
 myMaid:GiveTask(
-    Selection.Changed:Connect(function(action, position)
-        if action == 'reset' then
-
-            for _, v in pairs(selectGuis) do
-                v:Destroy()
-            end
-            table.clear(selectGuis)
-
-        elseif action == 'add' then
-
-            local new = faceSelectGui:Clone()
-            table.insert(selectGuis, new)
-
-            new.Adornee = Selection.List[position].Part
-            new.Face = Selection.List[position].Face
-            new.Enabled = toggle
-
-            new.Parent = CoreGui
-            myMaid:GiveTask(new)
-
-        elseif action == 'remove' then
-
-            local defunct = table.remove(selectGuis, position)
-            defunct:Destroy()
-
-        end
+    ssPrecise.Triggered:Connect(function()
+        precisionToggle = not precisionToggle
+        UI:TogglePrecise(precisionToggle)
     end)
 )
 
 
+-- control selection of parts and faces on those parts
+local Selection = require(script.Selection)
+myMaid:GiveTask(Selection)
+
+Selection.Changed:Connect(function(action, position)
+    if action == 'remove' then
+        UI:RemoveSelect(position)
+    elseif action == 'add' then
+        local pf = Selection.List[position]
+        UI:AddSelect(pf.Part, pf.Face, toggle, precisionToggle)
+    elseif action == 'reset' then
+        UI:ResetSelects()
+    end
+end)
+
+
 -- extend and retract functionality
-local Scaler = require(script.Scaler)(myMaid)
+local Scaler = require(script.Scaler)
+myMaid:GiveTask(Scaler)
 
 local ssExtend = plugin:CreatePluginAction(
     "ssextend",
@@ -109,7 +89,7 @@ local function scale(dir)
         return
     end
 
-    local increment = precision and plugin.GridSize/10 or plugin.GridSize
+    local increment = precisionToggle and plugin.GridSize * precisionScale or plugin.GridSize
 
     for _, pf in pairs(Selection.List) do
         Scaler.ScaleFace(pf.Part, pf.Face, increment, dir)

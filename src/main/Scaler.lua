@@ -1,8 +1,13 @@
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
+
+local root = script.Parent.Parent
+local Maid = require(root.Util.Maid)
+
 local abs = math.abs
 
 
 local Scaler = {}
+Scaler._maid = Maid.new()
 
 Scaler.Cooldown = 0.5
 Scaler.LastScaled = os.clock()
@@ -42,19 +47,22 @@ function Scaler.ScaleFace(part, face, increment, direction)
     return true
 end
 
+function Scaler:Destroy()
+    Scaler._maid:DoCleaning()
+end
+
 
 local RunService = game:GetService("RunService")
 
-local runCxn = RunService.Heartbeat:Connect(function()
-    if not Scaler.ScaledThisFrame then
-        Scaler.IsFirstScale = true
-    end
+Scaler._maid:GiveTask(
+    RunService.Heartbeat:Connect(function()
+        if not Scaler.ScaledThisFrame then
+            Scaler.IsFirstScale = true
+        end
 
-    Scaler.ScaledThisFrame = false
-end)
+        Scaler.ScaledThisFrame = false
+    end)
+)
 
 
-return function(maid)
-    maid:GiveTask(runCxn)
-    return Scaler
-end
+return Scaler

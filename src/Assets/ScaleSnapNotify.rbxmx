@@ -57,7 +57,7 @@
 				</Vector2>
 				<float name="ImageTransparency">0</float>
 				<int name="LayoutOrder">0</int>
-				<string name="Name">exclamation</string>
+				<string name="Name">Icon</string>
 				<Ref name="NextSelectionDown">null</Ref>
 				<Ref name="NextSelectionLeft">null</Ref>
 				<Ref name="NextSelectionRight">null</Ref>
