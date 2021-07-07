@@ -72,9 +72,9 @@
 				<Ref name="SelectionImageObject">null</Ref>
 				<UDim2 name="Size">
 					<XS>1</XS>
-					<XO>-10</XO>
+					<XO>-1</XO>
 					<YS>1</YS>
-					<YO>-10</YO>
+					<YO>-1</YO>
 				</UDim2>
 				<token name="SizeConstraint">0</token>
 				<int64 name="SourceAssetId">-1</int64>

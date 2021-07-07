@@ -1,5 +1,3 @@
-local plugin = script:FindFirstAncestorWhichIsA("Plugin")
-
 local CoreGui = game:GetService("CoreGui")
 
 local root = script.Parent.Parent
